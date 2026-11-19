@@ -2,17 +2,15 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
-softmax = nn.Softmax(1)
+encoder = LabelEncoder()
 
+data = pd.read_csv('data.csv')
+X = data['text']
+y = data['sentiment']
 
-def attention(q,k,v):
+y = encoder.fit_transform(y=y)
 
-    dim_d = np.shape(k)[1]
-
- 
-    a = q @ np.transpose(k)
-    b = np.sqrt(dim_d)
-    return softmax(a/b)*v
-
-
+print(y)

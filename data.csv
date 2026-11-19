@@ -1,0 +1,31 @@
+text,sentiment
+I love this product,positive
+This is absolutely amazing,positive
+I am very happy today,positive
+The experience was wonderful,positive
+This movie was fantastic,positive
+I really enjoyed the service,positive
+The food tastes delicious,positive
+I am excited about this,positive
+Everything worked perfectly,positive
+This is the best day ever,positive
+I hate this product,negative
+This is absolutely terrible,negative
+I am very disappointed,negative
+The experience was horrible,negative
+This movie was boring,negative
+I regret buying this,negative
+The food tastes awful,negative
+I am frustrated with this,negative
+Everything went wrong,negative
+This is the worst day ever,negative
+The product arrived today,neutral
+I watched a movie yesterday,neutral
+The food is on the table,neutral
+I bought a new laptop,neutral
+The meeting starts at five,neutral
+She is reading a book,neutral
+The weather is cloudy,neutral
+He went to school,neutral
+The package contains three items,neutral
+I am sitting in my room,neutral
