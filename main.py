@@ -54,3 +54,8 @@ X_tensor = pad_sequence(
 
 
 print(X_tensor)
+
+embeddings  = nn.Embedding(4,3)
+
+X_tensor = embeddings(X_tensor)
+print(X_tensor)
