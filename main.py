@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-from textnorm import TextNorm
+from textnorm import TextNorm , PositionalEncoding
 from torch.nn.utils.rnn import pad_sequence
 
 encoder = LabelEncoder()
@@ -53,7 +53,12 @@ X_tensor = pad_sequence(
 )
 
 
-embedding_model = nn.Embedding(75,2)
+embedding_model = nn.Embedding(76,64)
 X_embedding = embedding_model(X_tensor)
+positional_encoder = PositionalEncoding(64,5000)
+X_encodings = positional_encoder(X_embedding)
 
-print(X_embedding)
+
+
+
+print(X_encodings.shape)
