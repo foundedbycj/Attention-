@@ -68,7 +68,7 @@ encoder = Encoder(64,6)
 output = encoder(X_embedding)
 
 
-print(output)
+print(output.shape)
 
 
 

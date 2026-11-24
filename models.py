@@ -58,15 +58,19 @@ class Encoder(nn.Module):
             EncoderUnit(dim_model)
             for _ in range(num_layer)]
         )
+        self.classifier = nn.Linear(64,3)
 
 
     def forward(self,x):
 
         for layer in self.layers:
             x = layer(x)
+            encoded = x
+
+            prediction = self.classifier(encoded[:, 0, :])
 
 
-        return(x)
+        return(prediction)
 
 
 
