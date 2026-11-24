@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from textnorm import TextNorm , PositionalEncoding
 from torch.nn.utils.rnn import pad_sequence
-from models import Self_Attention
+from models import Self_Attention , Encoder
 
 encoder = LabelEncoder()
 
@@ -61,27 +61,15 @@ X_encodings = positional_encoder(X_embedding)
 
 
 
+print(X_encodings.shape) # (30,6,64)
 
+encoder = Encoder(64,6)
 
-self_attention = Self_Attention(64)
+output = encoder(X_embedding)
 
-attention_output = self_attention(X_encodings)
-
-print(attention_output)
-
-norm = nn.LayerNorm(attention_output.shape)
-
-
-normalised = norm(attention_output+X_encodings)
-
-print(normalised.shape)
-
-ffn = nn.Sequential(
-    nn.Linear(64,128),
-    nn.ReLU(),
-    nn.Linear(128,64)
-)
-
-output = ffn(normalised)
 
 print(output)
+
+
+
+
