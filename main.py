@@ -64,4 +64,24 @@ X_encodings = positional_encoder(X_embedding)
 
 
 self_attention = Self_Attention(64)
-print(self_attention(X_encodings))
+
+attention_output = self_attention(X_encodings)
+
+print(attention_output)
+
+norm = nn.LayerNorm(attention_output.shape)
+
+
+normalised = norm(attention_output+X_encodings)
+
+print(normalised.shape)
+
+ffn = nn.Sequential(
+    nn.Linear(64,128),
+    nn.ReLU(),
+    nn.Linear(128,64)
+)
+
+output = ffn(normalised)
+
+print(output)

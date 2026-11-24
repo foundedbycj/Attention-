@@ -18,9 +18,9 @@ class Self_Attention(nn.Module):
         scores = Q@torch.transpose(input=K,dim0=1,dim1=2)
 
         scores = scores/torch.sqrt(torch.tensor(K.shape[-1]))
-        scores = torch.detach(scores).numpy()
+        
 
-        output = softmax(scores)@ V
+        output = softmax(scores) @ V
 
         return output
 
