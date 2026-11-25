@@ -14,8 +14,8 @@ data = pd.read_csv('data.csv')
 
 X = data['text']
 y = data['sentiment']
-y = encoder.fit_transform(y=y)
-
+y = torch.tensor(encoder.fit_transform(y=y))
+y = torch.unsqueeze(y,dim=-1)
 
 text_normaliser = TextNorm(X)
 
@@ -68,7 +68,7 @@ encoder = Encoder(64,6)
 output = encoder(X_embedding)
 
 
-print(output.shape)
+print(y.shape)
 
 
 
