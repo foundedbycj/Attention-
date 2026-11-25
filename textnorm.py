@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import math
+
 class TextNorm:
 
     def __init__(self,Data):
@@ -10,9 +14,7 @@ class TextNorm:
             text.append(token)
         return text
 
-import torch
-import torch.nn as nn
-import math
+
 
 class PositionalEncoding(nn.Module):
 
