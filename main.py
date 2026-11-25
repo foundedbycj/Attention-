@@ -55,21 +55,47 @@ X_tensor = pad_sequence(
 
 
 embedding_model = nn.Embedding(76,64)
-X_embedding = embedding_model(X_tensor)
-positional_encoder = PositionalEncoding(64,5000)
-X_encodings = positional_encoder(X_embedding)
 
 
-
-print(X_encodings.shape) # (30,6,64)
 
 encoder = Encoder(64,6)
 
-output = encoder(X_embedding)
+
+criterion = nn.CrossEntropyLoss()
+
+optimiser = torch.optim.Adam(params=encoder.parameters(),lr=0.01)
+
+epochs = 10
+
+for epoch in range (epochs):
+    X_embedding = embedding_model(X_tensor)
+    positional_encoder = PositionalEncoding(64,5000)
+    X_encodings = positional_encoder(X_embedding)
 
 
-print(y.shape)
+
+    encoder.train()
+
+    output =encoder(X_encodings)
+    y_pred = output
+    y = torch.squeeze(y)
+    
+    
+    optimiser.zero_grad()
+
+    loss = criterion(y_pred,y)
+    loss.backward()
+    optimiser.step()
+
+    print(f'loss at epoch {epoch+1} is {loss.item()}')
+
+    torch.save(
+        encoder.state_dict(),
+        f='weights.pt'
+    )
 
 
 
+
+print (y_pred.shape , y.shape)
 

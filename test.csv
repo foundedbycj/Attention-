@@ -1,0 +1,31 @@
+sentence,sentiment
+I absolutely love this product,positive
+The movie was really amazing,positive
+Today was a wonderful day,positive
+This food tastes incredibly delicious,positive
+I enjoyed every single moment,positive
+The service was quite excellent,positive
+I feel very happy,positive
+Everything worked perfectly today,positive
+This experience was truly fantastic,positive
+I really liked it,positive
+I hate this terrible experience,negative
+The food tasted absolutely awful,negative
+This movie was extremely boring,negative
+I regret buying this product,negative
+The service was very disappointing,negative
+Nothing worked as expected today,negative
+I feel really frustrated,negative
+This was a complete disaster,negative
+I dislike this new update,negative
+The experience was quite unpleasant,negative
+The meeting starts at noon,neutral
+I bought a new notebook,neutral
+The package arrived this morning,neutral
+She lives near the station,neutral
+The class begins at nine,neutral
+There are five chairs here,neutral
+My phone has a blue case,neutral
+The shop closes at eight,neutral
+He works in the city,neutral
+The book has twelve chapters,neutral
