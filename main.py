@@ -54,7 +54,7 @@ X_tensor = pad_sequence(
 )
 
 
-embedding_model = nn.Embedding(76,64)
+embedding_model = nn.Embedding(num_embeddings=len(vocab),embedding_dim=64)
 
 
 
@@ -63,19 +63,20 @@ encoder = Encoder(64,6)
 
 criterion = nn.CrossEntropyLoss()
 
-optimiser = torch.optim.Adam(params=encoder.parameters(),lr=0.01)
+optimiser = torch.optim.Adam(params=  list(encoder.parameters()) +
+    list(embedding_model.parameters()),lr=0.01)
+positional_encoder = PositionalEncoding(64,5000)
 
 epochs = 10
 
 for epoch in range (epochs):
     X_embedding = embedding_model(X_tensor)
-    positional_encoder = PositionalEncoding(64,5000)
     X_encodings = positional_encoder(X_embedding)
 
 
 
     encoder.train()
-
+    embedding_model.train()
     output =encoder(X_encodings)
     y_pred = output
     y = torch.squeeze(y)

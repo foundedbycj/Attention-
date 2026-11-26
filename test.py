@@ -8,9 +8,9 @@ from textnorm import TextNorm,PositionalEncoding
 from torch.nn.utils.rnn import pad_sequence
 encoder  = LabelEncoder()
 
-data = pd.read_csv('data.csv')
+data = pd.read_csv('test.csv')
 
-X = data['text']
+X = data['sentence']
 y = data['sentiment']
 y = torch.tensor(encoder.fit_transform(y=y))
 y = torch.unsqueeze(y,dim=-1)
@@ -51,7 +51,7 @@ X_tensor = pad_sequence(
 )
 
 
-embedding_model = nn.Embedding(76,64)
+embedding_model = nn.Embedding(len(vocab),64)
 
 
 model = Encoder(64,6)
@@ -64,7 +64,7 @@ X_embedding = embedding_model(X_tensor)
 positional_encoder = PositionalEncoding(64,5000)
 X_encodings = positional_encoder(X_embedding)
 
-
+model.eval()
 with torch.no_grad():
 
     output  = model(X_encodings)
