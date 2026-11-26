@@ -64,7 +64,7 @@ encoder = Encoder(64,6)
 criterion = nn.CrossEntropyLoss()
 
 optimiser = torch.optim.Adam(params=  list(encoder.parameters()) +
-    list(embedding_model.parameters()),lr=0.01)
+    list(embedding_model.parameters()),lr=0.0001)
 positional_encoder = PositionalEncoding(64,5000)
 
 epochs = 10
