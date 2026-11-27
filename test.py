@@ -10,6 +10,7 @@ encoder  = LabelEncoder()
 
 data = pd.read_csv('test.csv')
 
+
 X = data['sentence']
 y = data['sentiment']
 y = torch.tensor(encoder.fit_transform(y=y))
@@ -48,23 +49,29 @@ X_tensor = pad_sequence(
     sequences=sequences,
     batch_first=True,
     padding_value=vocab['<PAD>']
-)
+)   
 
+#checkpoint
+
+checkpoint = torch.load(
+    f=  'weights.pt',
+    weights_only=True
+)
 
 embedding_model = nn.Embedding(len(vocab),64)
-
+embedding_model.load_state_dict(checkpoint['embedding']
+)
 
 model = Encoder(64,6)
-model.load_state_dict(
-    torch.load(
-        f='weights.pt',
-        weights_only=True)
+model.load_state_dict(checkpoint['encoder']
 )
+
 
 mask = (X_tensor != vocab['<PAD>'])
 X_embedding = embedding_model(X_tensor)
 positional_encoder = PositionalEncoding(64,5000)
 X_encodings = positional_encoder(X_embedding)
+
 embedding_model.eval()
 model.eval()
 with torch.no_grad():

@@ -92,7 +92,8 @@ for epoch in range (epochs):
     print(f'loss at epoch {epoch+1} is {loss.item()}')
 
     torch.save(
-        encoder.state_dict(),
+        {'encoder':encoder.state_dict(),
+        'embedding': embedding_model.state_dict() },
         f='weights.pt'
     )
 
