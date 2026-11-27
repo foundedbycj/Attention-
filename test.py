@@ -60,19 +60,16 @@ model.load_state_dict(
         f='weights.pt',
         weights_only=True)
 )
+
+mask = (X_tensor != vocab['<PAD>'])
 X_embedding = embedding_model(X_tensor)
 positional_encoder = PositionalEncoding(64,5000)
 X_encodings = positional_encoder(X_embedding)
-
+embedding_model.eval()
 model.eval()
 with torch.no_grad():
 
     softmax = nn.Softmax(dim=1)
-    output  = model(X_encodings)
-    predictions = torch.argmax(output, dim=1)
-
-    print(torch.bincount(predictions, minlength=3))    
-
-
-    print("Actual labels:", torch.bincount(y, minlength=3))
-    print("Predicted labels:", torch.bincount(predictions, minlength=3))
+    output  = model(X_encodings,mask)
+    predictions = torch.softmax(output, dim=1)
+    print(predictions)
