@@ -14,10 +14,9 @@ data = pd.read_csv('data.csv')
 
 
 X = data['text']
-y = data['sentiment']
 
-y = torch.tensor(encoder.fit_transform(y=y))
-y = torch.unsqueeze(y,dim=-1)
+y = torch.tensor(encoder.fit_transform(data['sentiment']))
+y = torch.unsqueeze(y,-1)
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,stratify=y)
 
 text_normaliser = TextNorm(X)
@@ -35,28 +34,33 @@ for sentence in tokenised_train :
         if word not in vocab:
             vocab[word] = len(vocab)
 
-encoded_text = []
+def encode_text(tokenised_data, vocab):
+    encoded = []
 
-for sentence in tokenised_text:
-    encoded_sentence = []
-    for word in sentence:
-        encoded_sentence.append(
-            vocab.get(word,vocab["<UNK>"])
-        )
-    encoded_text.append(encoded_sentence)
+    for sentence in tokenised_data:
+        ids = [
+            vocab.get(word, vocab["<UNK>"])
+            for word in sentence
+        ]
+        encoded.append(torch.tensor(ids, dtype=torch.long))
 
-sequences = []
-for sentence in encoded_text:
-    tensors = torch.tensor(sentence,dtype=torch.long)
-    sequences.append(tensors)
+    return encoded
 
-X_tensor = pad_sequence(
-    sequences=sequences,
+X_train_encoded = encode_text(tokenised_train, vocab)
+X_test_encoded = encode_text(tokenised_test, vocab)
+
+
+X_train_tensor = pad_sequence(
+    sequences=X_train_encoded,
     batch_first=True,
     padding_value=vocab['<PAD>']
 )
 
-
+X_test_tensor = pad_sequence(
+    sequences=X_test_encoded,
+    batch_first=True,
+    padding_value=vocab['<PAD>']
+)
 embedding_model = nn.Embedding(num_embeddings=len(vocab),embedding_dim=64)
 
 
@@ -70,12 +74,12 @@ optimiser = torch.optim.Adam(params=  list(encoder.parameters()) +
     list(embedding_model.parameters()),lr=0.0008)
 positional_encoder = PositionalEncoding(64,5000)
 
-epochs = 10
+epochs = 100
 
 for epoch in range (epochs):
 
-    valid_mask =( X_tensor != vocab['<PAD>'])
-    X_embedding = embedding_model(X_tensor)
+    valid_mask =( X_train_tensor != vocab['<PAD>'])
+    X_embedding = embedding_model(X_train_tensor)
     X_encodings = positional_encoder(X_embedding)
 
 
@@ -83,12 +87,10 @@ for epoch in range (epochs):
     embedding_model.train()
     output =encoder(X_encodings,valid_mask)
     y_pred = output
-    y = torch.squeeze(y)
-    
-    
+    y_train = torch.squeeze(y_train)
     optimiser.zero_grad()
 
-    loss = criterion(y_pred,y)
+    loss = criterion(y_pred,y_train)
     loss.backward()
     optimiser.step()
 
@@ -103,5 +105,8 @@ for epoch in range (epochs):
 
 
 
-print (y_pred.shape , y.shape)
 
+torch.save(
+    vocab,
+    'vocab.pt'
+)

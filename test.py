@@ -6,50 +6,53 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from textnorm import TextNorm,PositionalEncoding
 from torch.nn.utils.rnn import pad_sequence
+from sklearn.model_selection import train_test_split
 encoder  = LabelEncoder()
+data = pd.read_csv('data.csv')
 
-data = pd.read_csv('test.csv')
 
+X = data['text']
 
-X = data['sentence']
-y = data['sentiment']
-y = torch.tensor(encoder.fit_transform(y=y))
-y = torch.squeeze(y)
+y = torch.tensor(encoder.fit_transform(data['sentiment']))
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,stratify=y)
 
 text_normaliser = TextNorm(X)
 
-tokenised_text = text_normaliser.transform_text(X)
+tokenised_train = text_normaliser.transform_text(X_train)
+tokenised_test  = text_normaliser.transform_text(X_test)
 
-vocab = {
-    "<PAD>": 0,
-    "<UNK>": 1
-}
+vocab = torch.load('vocab.pt')
 
-for sentence in tokenised_text :
-    for word in sentence :
-        if word not in vocab:
-            vocab[word] = len(vocab)
+def encode_text(tokenised_data, vocab):
+    encoded = []
 
-encoded_text = []
+    for sentence in tokenised_data:
+        ids = [
+            vocab.get(word, vocab["<UNK>"])
+            for word in sentence
+        ]
+        encoded.append(torch.tensor(ids, dtype=torch.long))
 
-for sentence in tokenised_text:
-    encoded_sentence = []
-    for word in sentence:
-        encoded_sentence.append(
-            vocab.get(word,vocab["<UNK>"])
-        )
-    encoded_text.append(encoded_sentence)
+    return encoded
 
-sequences = []
-for sentence in encoded_text:
-    tensors = torch.tensor(sentence,dtype=torch.long)
-    sequences.append(tensors)
+X_train_encoded = encode_text(tokenised_train, vocab)
+X_test_encoded = encode_text(tokenised_test, vocab)
 
-X_tensor = pad_sequence(
-    sequences=sequences,
+
+X_train_tensor = pad_sequence(
+    sequences=X_train_encoded,
     batch_first=True,
     padding_value=vocab['<PAD>']
-)   
+)
+
+X_test_tensor = pad_sequence(
+    sequences=X_test_encoded,
+    batch_first=True,
+    padding_value=vocab['<PAD>']
+)
+embedding_model = nn.Embedding(num_embeddings=len(vocab),embedding_dim=64)
+
 
 #checkpoint
 
@@ -67,8 +70,8 @@ model.load_state_dict(checkpoint['encoder']
 )
 
 
-mask = (X_tensor != vocab['<PAD>'])
-X_embedding = embedding_model(X_tensor)
+mask = (X_test_tensor != vocab['<PAD>'])
+X_embedding = embedding_model(X_test_tensor)
 positional_encoder = PositionalEncoding(64,5000)
 X_encodings = positional_encoder(X_embedding)
 
@@ -79,4 +82,4 @@ with torch.no_grad():
     softmax = nn.Softmax(dim=1)
     output  = model(X_encodings,mask)
     predictions = torch.softmax(output, dim=1)
-    print(predictions)
+    print(predictions.round(decimals=2),y_test)
