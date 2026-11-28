@@ -7,27 +7,30 @@ from sklearn.preprocessing import LabelEncoder
 from textnorm import TextNorm , PositionalEncoding
 from torch.nn.utils.rnn import pad_sequence
 from models import Self_Attention , Encoder
-
+from sklearn.model_selection import train_test_split
 encoder = LabelEncoder()
 
 data = pd.read_csv('data.csv')
 
+
 X = data['text']
 y = data['sentiment']
+
 y = torch.tensor(encoder.fit_transform(y=y))
 y = torch.unsqueeze(y,dim=-1)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,stratify=y)
 
 text_normaliser = TextNorm(X)
 
-tokenised_text = text_normaliser.transform_text(X)
-
+tokenised_train = text_normaliser.transform_text(X_train)
+tokenised_test  = text_normaliser.transform_text(X_test)
 
 vocab = {
     "<PAD>": 0,
     "<UNK>": 1
 }
 
-for sentence in tokenised_text :
+for sentence in tokenised_train :
     for word in sentence :
         if word not in vocab:
             vocab[word] = len(vocab)
